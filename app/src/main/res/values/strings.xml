@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Prime Plus</string>
+    <string name="scan_wifi">Scan Wifi</string>
+    <string name="start_log">Start Log</string>
+    <string name="stop_log">Stop Log</string>
+    <string name="create_log">Create Log</string>
+</resources>
