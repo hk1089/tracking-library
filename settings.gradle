@@ -10,3 +10,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "WorkManagerApp"
 include ':app'
+include ':trackingLibrary'

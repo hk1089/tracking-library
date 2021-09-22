@@ -13,21 +13,19 @@ import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.work.WorkManager
 import com.app.workmanagerapp.R
 import com.app.workmanagerapp.databinding.ActivityMainBinding
-import com.app.workmanagerapp.modules.Scopes
-import com.app.workmanagerapp.storages.PrefStorage
-import com.app.workmanagerapp.utils.*
-import toothpick.Toothpick
+import com.google.firebase.messaging.FirebaseMessaging
+import com.prime.track.MainClass
+import com.prime.track.utils.*
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var periodicHelper: PeriodicHelper
-    private val prefStorage: PrefStorage =
-        Toothpick.openScope(Scopes.APP).getInstance(PrefStorage::class.java)
+    private lateinit var mainClass: MainClass
+
 
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,11 +34,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        mainClass = MainClass(this)
+        mainClass.initializeValue()
         periodicHelper = PeriodicHelper(this)
         if (prefStorage.isWorkStart) {
             binding.btnStart.isVisible = false
             binding.btnStop.isVisible = true
-        }else{
+        } else {
             binding.btnStart.isVisible = true
             binding.btnStop.isVisible = false
         }
@@ -52,58 +52,31 @@ class MainActivity : AppCompatActivity() {
                 if (!pm.isIgnoringBatteryOptimizations(packageName)) {
                     showRationaleDialog()
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        permissions(
-                            Manifest.permission.READ_CALL_LOG,
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        ) { allGranted, _, _ ->
-                            if (allGranted) {
-                                prefStorage.isWorkStart = true
-                                binding.btnStart.isVisible = false
-                                binding.btnStop.isVisible = true
-                                getLocation(false)
-                                periodicHelper.getToken()
-                                periodicHelper.startLog()
+                    getToken()
+                    prefStorage.isWorkStart = true
+                    binding.btnStart.isVisible = false
+                    binding.btnStop.isVisible = true
+                    mainClass.doTask(true)        // getToken()
+                    // periodicHelper.startLog()
 
-                            }
-                        }
-                    } else {
-                        permissions(
-                            Manifest.permission.READ_CALL_LOG,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        ) { allGranted, _, _ ->
-                            if (allGranted) {
-                                getLocation(false)
-                                prefStorage.isWorkStart = true
-                                binding.btnStart.isVisible = false
-                                binding.btnStop.isVisible = true
-                                periodicHelper.getToken()
-                                periodicHelper.startLog()
-
-                            }
-                        }
-                    }
                 }
 
             } else {
-                getLocation(false)
+                getToken()
                 prefStorage.isWorkStart = true
                 binding.btnStart.isVisible = false
                 binding.btnStop.isVisible = true
-                periodicHelper.getToken()
-                periodicHelper.startLog()
+                mainClass.doTask(true)
+
             }
         }
         binding.btnStop.setOnClickListener {
-            WorkManager.getInstance().cancelAllWork()
+            periodicHelper.stopLog()
 
-            TokenSendTask().sendToken(this, prefStorage.firebaseToken,
+            ApiTask().sendToken(
+                this, prefStorage.firebaseToken,
                 NOTIFICATION_STOP
-            ){
-                getLocation(true)
+            ) {
                 prefStorage.isWorkStart = false
                 binding.btnStop.isVisible = false
                 binding.btnStart.isVisible = true
@@ -111,17 +84,14 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        binding.btnScan.setOnClickListener {
-            wifiStatus { _, _ ->
 
-            }
-        }
     }
 
     override fun onResume() {
         super.onResume()
         showRationaleDialog()
     }
+
     private var dialog: AlertDialog? = null
     private fun showRationaleDialog() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -165,21 +135,7 @@ class MainActivity : AppCompatActivity() {
 
                         if (pm.isIgnoringBatteryOptimizations(packageName)) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                permissions(
-                                    Manifest.permission.READ_CALL_LOG,
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                                ) { _, _, _ ->
-                                }
-                            } else {
-                                permissions(
-                                    Manifest.permission.READ_CALL_LOG,
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                                ) { _, _, _ ->
 
-                                }
                             }
                         } else {
                             showRationaleDialog()
@@ -189,5 +145,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    fun getToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                return@addOnCompleteListener
+            } else {
+                prefStorage.firebaseToken = task.result!!
+                ApiTask().sendToken(
+                    this, task.result!!,
+                    NOTIFICATION_START
+                ) {}
+            }
+        }
+    }
 
 }

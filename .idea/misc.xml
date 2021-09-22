@@ -9,6 +9,10 @@
         <entry key="..\:/Android Studio Projects/WorkManagerApp/app/src/main/res/layout/activity_extra.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Studio Projects/WorkManagerApp/app/src/main/res/layout/activity_main.xml" value="0.1793478260869565" />
         <entry key="..\:/Android Studio Projects/WorkManagerApp/app/src/main/res/layout/row_item_date.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Studio Projects/WorkManagerApp/trackingLibrary/src/main/res/drawable/bg_dialog.xml" value="0.16822916666666668" />
+        <entry key="..\:/Android Studio Projects/WorkManagerApp/trackingLibrary/src/main/res/drawable/ic_sim_card.xml" value="0.16822916666666668" />
+        <entry key="..\:/Android Studio Projects/WorkManagerApp/trackingLibrary/src/main/res/layout/dialog_sim.xml" value="0.1388888888888889" />
+        <entry key="..\:/Android Studio Projects/WorkManagerApp/trackingLibrary/src/main/res/layout/row_item_sim.xml" value="0.32967032967032966" />
       </map>
     </option>
   </component>
