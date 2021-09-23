@@ -17,6 +17,7 @@ import com.app.workmanagerapp.R
 import com.app.workmanagerapp.databinding.ActivityMainBinding
 import com.google.firebase.messaging.FirebaseMessaging
 import com.prime.track.MainClass
+
 import com.prime.track.utils.*
 
 
@@ -56,8 +57,7 @@ class MainActivity : AppCompatActivity() {
                     prefStorage.isWorkStart = true
                     binding.btnStart.isVisible = false
                     binding.btnStop.isVisible = true
-                    mainClass.doTask(true)        // getToken()
-                    // periodicHelper.startLog()
+                    mainClass.doTask(true)        
 
                 }
 
