@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                     prefStorage.isWorkStart = true
                     binding.btnStart.isVisible = false
                     binding.btnStop.isVisible = true
-                    mainClass.doTask(true)        
+                    mainClass.doTask(true)
 
                 }
 

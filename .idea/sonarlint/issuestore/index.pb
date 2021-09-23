@@ -19,8 +19,6 @@ FtrackingLibrary/src/main/java/com/prime/track/storages/CallLogsData.kt,3\6\364
 ,trackingLibrary/src/main/AndroidManifest.xml,8\e\8ee2660d6b2730131574ac8ebeed9a088ecaa6e1
 u
 EtrackingLibrary/src/main/java/com/prime/track/utils/PeriodicHelper.kt,7\b\7ba3d54aebd0af4814f4edbce0a8567924fa0c29
-L
-trackingLibrary/build.gradle,0\e\0e90765c28beac11bf0a9564e1cd60cac08285a9
 u
 EtrackingLibrary/src/main/java/com/prime/track/storages/PrefStorage.kt,5\f\5f734edcbb9b5ca6a3fa984661aecf42a53f6427
 u
